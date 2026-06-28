@@ -507,6 +507,74 @@ export function smoothLoopsToPath(loops: Point[][], w: number, h: number, decima
   return d;
 }
 
+/** Turn angle (degrees) at b between edges a→b and b→c. 0 = straight, 180 = reversal. */
+function turnAngleDeg(a: Point, b: Point, c: Point): number {
+  const ux = b.x - a.x;
+  const uy = b.y - a.y;
+  const vx = c.x - b.x;
+  const vy = c.y - b.y;
+  const lu = Math.hypot(ux, uy);
+  const lv = Math.hypot(vx, vy);
+  if (lu === 0 || lv === 0) return 180; // degenerate edge ⇒ treat as a corner
+  let cos = (ux * vx + uy * vy) / (lu * lv);
+  cos = cos < -1 ? -1 : cos > 1 ? 1 : cos;
+  return (Math.acos(cos) * 180) / Math.PI;
+}
+
+/**
+ * Corner-aware hybrid fitting (Potrace-style). The path runs through edge
+ * midpoints; at each polygon vertex the turn angle decides the treatment:
+ *  - turn angle ≥ cornerThresholdDeg  → sharp CORNER (straight lines to the vertex)
+ *  - turn angle <  cornerThresholdDeg → smooth CURVE (cubic Bézier tangent to both
+ *    edges at the midpoints, bulging toward the vertex)
+ * cornerThresholdDeg = 0 ⇒ all corners (polygon); 180 ⇒ all smooth.
+ * Smooth segments use the cubic equivalent of a quadratic through the vertex
+ * (control handles at 2/3 toward the vertex), so curves never overshoot.
+ */
+export function hybridLoopsToPath(
+  loops: Point[][],
+  w: number,
+  h: number,
+  cornerThresholdDeg: number,
+  decimals = 1,
+): string {
+  const mid = (p: Point, q: Point): Point => ({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 });
+  const X = (v: number): string => fmt(clamp(v, w), decimals);
+  const Y = (v: number): string => fmt(clamp(v, h), decimals);
+
+  let d = '';
+  for (const loop of loops) {
+    const n = loop.length;
+    if (n < 3) continue;
+    const V = (i: number): Point => loop[((i % n) + n) % n];
+    const edgeMid = (i: number): Point => mid(V(i), V(i + 1)); // midpoint of edge V[i]→V[i+1]
+
+    const start = edgeMid(-1); // midpoint of the edge entering V[0]
+    d += `M${X(start.x)} ${Y(start.y)}`;
+
+    for (let i = 0; i < n; i++) {
+      const b = V(i);
+      const mOut = edgeMid(i);
+      const theta = turnAngleDeg(V(i - 1), b, V(i + 1));
+
+      if (theta >= cornerThresholdDeg) {
+        // sharp corner: straight to the vertex, then to the outgoing midpoint
+        d += `L${X(b.x)} ${Y(b.y)}L${X(mOut.x)} ${Y(mOut.y)}`;
+      } else {
+        // smooth: cubic from current point (incoming midpoint) to mOut
+        const mIn = edgeMid(i - 1);
+        const c1x = mIn.x + (2 / 3) * (b.x - mIn.x);
+        const c1y = mIn.y + (2 / 3) * (b.y - mIn.y);
+        const c2x = mOut.x + (2 / 3) * (b.x - mOut.x);
+        const c2y = mOut.y + (2 / 3) * (b.y - mOut.y);
+        d += `C${X(c1x)} ${Y(c1y)} ${X(c2x)} ${Y(c2y)} ${X(mOut.x)} ${Y(mOut.y)}`;
+      }
+    }
+    d += 'Z';
+  }
+  return d;
+}
+
 /** Open polylines → path data (for stroked centerline output). */
 export function polylinesToPath(lines: Point[][], w: number, h: number, decimals = 1): string {
   let d = '';

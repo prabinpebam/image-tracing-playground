@@ -10,6 +10,7 @@
 import type { ParamValues, TraceInput, TraceResult, TracerModule, TracerParam } from '../../core/types';
 import type { Point } from '../../core/trace-geometry';
 import {
+  hybridLoopsToPath,
   loopArea,
   loopsToPath,
   marchingSquaresLoops,
@@ -28,12 +29,24 @@ const params: TracerParam[] = [
     key: 'output',
     label: 'Output',
     type: 'enum',
-    default: 'polygon',
+    default: 'hybrid',
     group: 'Curves',
     options: [
+      { value: 'hybrid', label: 'Hybrid (corner-aware)' },
       { value: 'polygon', label: 'Polygon' },
       { value: 'smooth', label: 'Smooth (Bézier)' },
     ],
+  },
+  {
+    key: 'cornerThreshold',
+    label: 'Corner angle',
+    type: 'number',
+    default: 80,
+    min: 0,
+    max: 180,
+    step: 1,
+    group: 'Curves',
+    help: 'Hybrid mode: turns sharper than this angle stay as crisp corners; gentler bends become Béziers.',
   },
 ];
 
@@ -55,7 +68,14 @@ export const colorRegions: TracerModule = {
     const k = Number(p.colors);
     const minArea = Number(p.minArea);
     const epsilon = Number(p.epsilon);
-    const smooth = String(p.output) === 'smooth';
+    const output = String(p.output);
+    const cornerThreshold = Number(p.cornerThreshold);
+    const toPath = (loops: Point[][]): string =>
+      output === 'smooth'
+        ? smoothLoopsToPath(loops, width, height)
+        : output === 'polygon'
+          ? loopsToPath(loops, width, height)
+          : hybridLoopsToPath(loops, width, height, cornerThreshold);
 
     const { palette, labels } = quantize(imageData, k);
     const counts = new Array<number>(palette.length).fill(0);
@@ -82,7 +102,7 @@ export const colorRegions: TracerModule = {
 
     let totalLoops = 0;
     for (const layer of layers) {
-      const d = smooth ? smoothLoopsToPath(layer.loops, width, height) : loopsToPath(layer.loops, width, height);
+      const d = toPath(layer.loops);
       body += `<path d="${d}" fill="${rgb(layer.color)}" fill-rule="evenodd"/>`;
       totalLoops += layer.loops.length;
     }

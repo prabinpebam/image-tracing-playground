@@ -82,7 +82,7 @@ Each engine is a self-contained module under `src/tracers/<id>/`. v0.2 ships fou
 
 | id | Name | Category | Runtime | Method | Status |
 | --- | --- | --- | --- | --- | --- |
-| `contour` | Contour Trace | binary | built-in TS | marching-squares boundaries → Douglas–Peucker → optional Catmull–Rom Bézier | **Working** |
+| `contour` | Contour Trace | binary | built-in TS | marching-squares boundaries → Douglas–Peucker → corner-aware hybrid fitting (Potrace-style: sharp corners stay straight, gentle bends become Béziers) | **Working** |
 | `color-regions` | Color Regions | color-region | built-in TS | median-cut quantization → per-color contours → stacked layers | **Working** |
 | `imagetracer` | ImageTracer | color-region | `imagetracerjs` (MIT) | color quantization + interval tracing | **Working** |
 | `centerline` | Centerline | centerline | built-in TS | Zhang–Suen thinning → skeleton polyline tracing | **Working** (experimental) |

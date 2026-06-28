@@ -36,7 +36,7 @@ Four deterministic, dependency-light engines ship and work today:
 
 | Engine | Category | Method | Status |
 | --- | --- | --- | --- |
-| Contour Trace | binary | marching-squares boundaries → Douglas–Peucker → optional Bézier | Working |
+| Contour Trace | binary | marching-squares boundaries → Douglas–Peucker → corner-aware hybrid (Potrace-style) fitting | Working |
 | Color Regions | color-region | median-cut quantization → per-color contours, stacked | Working |
 | ImageTracer | color-region | `imagetracerjs` quantization + tracing (MIT) | Working |
 | Centerline | centerline | Zhang–Suen thinning → skeleton polylines | Working (experimental) |
