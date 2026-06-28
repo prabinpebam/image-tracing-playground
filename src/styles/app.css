@@ -161,6 +161,17 @@ button {
   box-shadow: var(--shadow-1);
 }
 
+.segmented .seg-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4) var(--space-8);
+  font-size: 15px;
+}
+.segmented .seg-icon:hover {
+  color: var(--graphite);
+}
+
 /* ------------------------------------------------------------- workspace */
 .workspace {
   display: grid;
@@ -242,10 +253,10 @@ button {
   min-height: 220px;
   background-color: var(--paper);
   /* checkerboard to read transparency */
-  background-image: linear-gradient(45deg, #f0f0ed 25%, transparent 25%),
-    linear-gradient(-45deg, #f0f0ed 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #f0f0ed 75%),
-    linear-gradient(-45deg, transparent 75%, #f0f0ed 75%);
+  background-image: linear-gradient(45deg, var(--checker) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker) 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
   border: 1px solid var(--line);
@@ -600,7 +611,7 @@ select {
 }
 .banner--info {
   background: var(--vector-soft);
-  color: #0b5d57;
+  color: var(--vector);
 }
 
 .spin {

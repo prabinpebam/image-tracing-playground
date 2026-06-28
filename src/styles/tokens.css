@@ -64,6 +64,28 @@
 
   /* ---- Elevation (used sparingly) ---- */
   --shadow-1: 0 1px 2px rgba(22, 25, 29, 0.06), 0 8px 24px rgba(22, 25, 29, 0.08);
+
+  /* ---- Preview transparency checkerboard ---- */
+  --checker: #f0f0ed;
+}
+
+/* Dark theme — inverts the neutral ramp, keeps both semantic accents. */
+[data-theme='dark'] {
+  --graphite: #e7ebe9;
+  --graphite-2: #c2cac6;
+  --slate: #97a1a8;
+  --film: #14171b;
+  --paper: #1b2026;
+  --line: #2e353c;
+
+  --raster: #ec9a4e;
+  --raster-soft: #3a2c1d;
+  --vector: #1fb3a6;
+  --vector-soft: #173430;
+  --signal: #e85a72;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.45);
+  --checker: #20262d;
 }
 
 @media (prefers-reduced-motion: reduce) {

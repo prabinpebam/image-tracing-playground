@@ -19,6 +19,9 @@ import {
 import type { PreprocessOptions, SampleKind } from '../core/image';
 import { compareImages } from '../core/metrics';
 import { brandMark, emptyArt, icon } from './icons';
+import type { IconName } from './icons';
+import { getThemeChoice, setThemeChoice } from './theme';
+import type { ThemeChoice } from './theme';
 import { renderEngineList, renderParams } from './controls';
 import { buildPreview, normalizeSvg } from './preview';
 import type { Overlays } from './preview';
@@ -58,6 +61,7 @@ export class App {
   private controlsBody!: HTMLElement;
   private controlsFoot!: HTMLElement;
   private modeHost!: HTMLElement;
+  private themeHost!: HTMLElement;
   private scheduleRun = debounce(() => void this.run(), 200);
 
   private state: State = {
@@ -105,6 +109,7 @@ export class App {
     this.controlsBody = el('div', { class: 'panel__body' });
     this.controlsFoot = el('div', { class: 'panel__foot' });
     this.modeHost = el('div', { class: 'segmented', role: 'group', 'aria-label': 'Mode' });
+    this.themeHost = el('div', { class: 'segmented', role: 'group', 'aria-label': 'Theme' });
 
     const appbar = el('header', { class: 'appbar' }, [
       el('div', { class: 'appbar__brand' }, [
@@ -114,7 +119,7 @@ export class App {
           el('div', { class: 'appbar__sub' }, ['deterministic raster → vector']),
         ]),
       ]),
-      el('div', { class: 'appbar__actions' }, [this.modeHost]),
+      el('div', { class: 'appbar__actions' }, [this.modeHost, this.themeHost]),
     ]);
 
     const sourceActions = el('div', { class: 'head-actions' }, [
@@ -139,6 +144,7 @@ export class App {
 
     mount(this.root, appbar, el('main', { class: 'workspace' }, [source, output, controls]), this.fileInput);
     this.renderMode();
+    this.renderTheme();
   }
 
   private iconButton(label: string, name: 'upload' | 'sample', onClick: () => void): HTMLElement {
@@ -162,6 +168,29 @@ export class App {
     this.renderMode();
     this.renderControls();
     void this.run();
+  }
+
+  /** Light / dark / system theme selector (icon segmented control). */
+  private renderTheme(): void {
+    const choice = getThemeChoice();
+    const make = (value: ThemeChoice, name: IconName, label: string): HTMLElement =>
+      el('button', {
+        type: 'button',
+        class: 'seg-icon',
+        title: label,
+        'aria-label': label,
+        'aria-pressed': String(choice === value),
+        onClick: () => {
+          setThemeChoice(value);
+          this.renderTheme();
+        },
+      }, [icon(name)]);
+    mount(
+      this.themeHost,
+      make('light', 'light', 'Light theme'),
+      make('dark', 'dark', 'Dark theme'),
+      make('system', 'system', 'System theme'),
+    );
   }
 
   // --------------------------------------------------------------- sources
