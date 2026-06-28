@@ -1,0 +1,74 @@
+/*
+ * Design tokens — "Anchor & Handle"
+ * Single source of truth for color, type, space, radius, motion.
+ * See documents/design-system.md. Do not hardcode values that exist here.
+ */
+
+:root {
+  /* ---- Color: graphite + drafting film neutrals ---- */
+  --graphite: #16191d;
+  --graphite-2: #2a2f37;
+  --slate: #5a6470;
+  --film: #eaeeec;
+  --paper: #fbfbf9;
+  --line: #ccd4cf;
+
+  /* ---- Color: semantic duality ---- */
+  /* warm = the raster source (pixels, input) */
+  --raster: #e08a3c;
+  --raster-soft: #f4d9be;
+  /* cool = the vector output (curves, result) */
+  --vector: #0e8f86;
+  --vector-soft: #bfe5e0;
+  /* reserved for genuine errors only */
+  --signal: #c8324b;
+
+  /* ---- Typography ---- */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.563rem;
+  --text-2xl: 1.953rem;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  --leading-tight: 1.15;
+  --leading-normal: 1.5;
+
+  /* ---- Spacing (4px grid) ---- */
+  --space-4: 0.25rem;
+  --space-8: 0.5rem;
+  --space-12: 0.75rem;
+  --space-16: 1rem;
+  --space-24: 1.5rem;
+  --space-32: 2rem;
+  --space-48: 3rem;
+  --space-64: 4rem;
+
+  /* ---- Radius ---- */
+  --radius-sm: 2px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  /* ---- Motion ---- */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms;
+  --dur-base: 170ms;
+
+  /* ---- Elevation (used sparingly) ---- */
+  --shadow-1: 0 1px 2px rgba(22, 25, 29, 0.06), 0 8px 24px rgba(22, 25, 29, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+  }
+}
