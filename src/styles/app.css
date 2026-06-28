@@ -290,6 +290,7 @@ button {
   color: var(--slate);
   max-width: 42ch;
   margin: 0 auto;
+  text-align: center;
 }
 
 .empty__actions {
