@@ -416,9 +416,9 @@ select {
 }
 
 .engine {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-8) var(--space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
   align-items: start;
   padding: var(--space-12);
   border: 1px solid var(--line);
@@ -440,20 +440,16 @@ select {
   font-size: var(--text-sm);
 }
 .engine__cat {
-  grid-column: 1;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   color: var(--slate);
-  align-self: center;
   white-space: nowrap;
 }
 .engine__blurb {
-  grid-column: 2;
   font-size: var(--text-xs);
   color: var(--slate);
 }
 .engine__status {
-  grid-column: 2;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   color: var(--raster-ink);
