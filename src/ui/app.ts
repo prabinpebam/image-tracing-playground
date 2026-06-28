@@ -57,6 +57,7 @@ export class App {
   private outputFoot!: HTMLElement;
   private controlsBody!: HTMLElement;
   private controlsFoot!: HTMLElement;
+  private modeHost!: HTMLElement;
   private scheduleRun = debounce(() => void this.run(), 200);
 
   private state: State = {
@@ -103,6 +104,7 @@ export class App {
     this.outputFoot = el('div', { class: 'panel__foot' });
     this.controlsBody = el('div', { class: 'panel__body' });
     this.controlsFoot = el('div', { class: 'panel__foot' });
+    this.modeHost = el('div', { class: 'segmented', role: 'group', 'aria-label': 'Mode' });
 
     const appbar = el('header', { class: 'appbar' }, [
       el('div', { class: 'appbar__brand' }, [
@@ -112,21 +114,15 @@ export class App {
           el('div', { class: 'appbar__sub' }, ['deterministic raster → vector']),
         ]),
       ]),
-      el('div', { class: 'appbar__actions' }, [
-        el('button', { class: 'btn btn--raster', type: 'button', onClick: () => this.fileInput.click() }, [
-          icon('upload'),
-          'Load image',
-        ]),
-        el('button', { class: 'btn btn--ghost', type: 'button', onClick: () => this.useSample() }, [
-          icon('sample'),
-          'Generate sample',
-        ]),
-        this.modeToggle(),
-      ]),
+      el('div', { class: 'appbar__actions' }, [this.modeHost]),
     ]);
 
+    const sourceActions = el('div', { class: 'head-actions' }, [
+      this.iconButton('Load image', 'upload', () => this.fileInput.click()),
+      this.iconButton('Sample', 'sample', () => this.useSample()),
+    ]);
     const source = el('section', { class: 'panel zone--source' }, [
-      el('div', { class: 'panel__head' }, [eyebrow('Source')]),
+      el('div', { class: 'panel__head' }, [eyebrow('Source'), sourceActions]),
       this.sourceHost,
       this.sourcePreprocess,
     ]);
@@ -142,28 +138,30 @@ export class App {
     ]);
 
     mount(this.root, appbar, el('main', { class: 'workspace' }, [source, output, controls]), this.fileInput);
+    this.renderMode();
   }
 
-  private modeToggle(): HTMLElement {
-    const make = (mode: 'single' | 'compare', label: string) =>
-      el(
-        'button',
-        {
-          type: 'button',
-          'aria-pressed': String(this.state.mode === mode),
-          onClick: () => {
-            if (this.state.mode === mode) return;
-            this.state.mode = mode;
-            this.renderAll();
-            void this.run();
-          },
-        },
-        [label],
-      );
-    return el('div', { class: 'segmented', role: 'group', 'aria-label': 'Mode' }, [
-      make('single', 'Single'),
-      make('compare', 'Compare'),
-    ]);
+  private iconButton(label: string, name: 'upload' | 'sample', onClick: () => void): HTMLElement {
+    return el('button', { class: 'icon-btn', type: 'button', title: label, 'aria-label': label, onClick }, [icon(name)]);
+  }
+
+  /** (Re)render the Single/Compare toggle so the active state always reflects mode. */
+  private renderMode(): void {
+    const make = (mode: 'single' | 'compare', label: string): HTMLElement =>
+      el('button', {
+        type: 'button',
+        'aria-pressed': String(this.state.mode === mode),
+        onClick: () => this.setMode(mode),
+      }, [label]);
+    mount(this.modeHost, make('single', 'Single'), make('compare', 'Compare'));
+  }
+
+  private setMode(mode: 'single' | 'compare'): void {
+    if (this.state.mode === mode) return;
+    this.state.mode = mode;
+    this.renderMode();
+    this.renderControls();
+    void this.run();
   }
 
   // --------------------------------------------------------------- sources

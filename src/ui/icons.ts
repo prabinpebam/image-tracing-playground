@@ -1,18 +1,36 @@
-/** Inline SVG glyphs. No emoji anywhere (per design system §9). currentColor-driven. */
+/**
+ * Icons. Functional glyphs use Fluent System Icons from the jsDelivr CDN,
+ * rendered as CSS masks so they inherit `currentColor` and scale with font
+ * size. The brand mark and empty-state art stay custom (the anchor-handle
+ * motif is part of the product identity). No emoji anywhere.
+ */
 
-import { fromHTML } from './dom';
+import { el, fromHTML } from './dom';
 
-const NS = 'stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"';
+const CDN = 'https://cdn.jsdelivr.net/gh/microsoft/fluentui-system-icons/assets';
 
-const glyphs: Record<string, string> = {
-  upload: `<svg viewBox="0 0 24 24" width="18" height="18" ${NS}><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>`,
-  sample: `<svg viewBox="0 0 24 24" width="18" height="18" ${NS}><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 14l4-4 4 4 3-3 5 5"/></svg>`,
-  nodes: `<svg viewBox="0 0 24 24" width="16" height="16" ${NS}><path d="M5 19 19 5"/><rect x="3" y="17" width="4" height="4" fill="currentColor"/><rect x="17" y="3" width="4" height="4" fill="currentColor"/></svg>`,
-  grid: `<svg viewBox="0 0 24 24" width="16" height="16" ${NS}><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>`,
-  ghost: `<svg viewBox="0 0 24 24" width="16" height="16" ${NS}><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 13l4-3 4 3 4-4 4 4"/></svg>`,
-  export: `<svg viewBox="0 0 24 24" width="16" height="16" ${NS}><path d="M12 4v12"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/></svg>`,
-  copy: `<svg viewBox="0 0 24 24" width="16" height="16" ${NS}><rect x="9" y="9" width="11" height="11" rx="1"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>`,
-};
+// semantic name → Fluent asset path (24px regular)
+const FLUENT = {
+  upload: 'Arrow%20Upload/SVG/ic_fluent_arrow_upload_24_regular.svg',
+  sample: 'Shapes/SVG/ic_fluent_shapes_24_regular.svg',
+  nodes: 'Pen/SVG/ic_fluent_pen_24_regular.svg',
+  grid: 'Grid/SVG/ic_fluent_grid_24_regular.svg',
+  ghost: 'Eye/SVG/ic_fluent_eye_24_regular.svg',
+  export: 'Arrow%20Download/SVG/ic_fluent_arrow_download_24_regular.svg',
+  copy: 'Copy/SVG/ic_fluent_copy_24_regular.svg',
+  chevron: 'Chevron%20Down/SVG/ic_fluent_chevron_down_24_regular.svg',
+} as const;
+
+export type IconName = keyof typeof FLUENT;
+
+/** A themeable Fluent icon (CSS mask painted with currentColor). */
+export function icon(name: IconName): HTMLElement {
+  return el('span', {
+    class: 'ficon',
+    'aria-hidden': 'true',
+    style: `--fi:url("${CDN}/${FLUENT[name]}")`,
+  });
+}
 
 /** The signature anchor-and-handle brand mark. */
 export function brandMark(size = 28): HTMLElement {
@@ -55,8 +73,4 @@ function gridLines(w: number, h: number, step: number): string {
   for (let x = step; x < w; x += step) out += `<line x1="${x}" y1="0" x2="${x}" y2="${h}"/>`;
   for (let y = step; y < h; y += step) out += `<line x1="0" y1="${y}" x2="${w}" y2="${y}"/>`;
   return out;
-}
-
-export function icon(name: keyof typeof glyphs): HTMLElement {
-  return fromHTML(glyphs[name]);
 }

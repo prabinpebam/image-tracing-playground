@@ -2,6 +2,7 @@
 
 import type { ParamValue, ParamValues, TracerModule, TracerParam } from '../core/types';
 import { el } from './dom';
+import { dropdown } from './dropdown';
 
 export function renderEngineList(
   engines: TracerModule[],
@@ -122,19 +123,9 @@ function enumField(
   value: string,
   onChange: (key: string, value: ParamValue) => void,
 ): HTMLElement {
-  const select = el(
-    'select',
-    {
-      'aria-label': p.label,
-      onChange: (e: Event) => onChange(p.key, (e.target as HTMLSelectElement).value),
-    },
-    (p.options ?? []).map((o) =>
-      el('option', { value: o.value, ...(o.value === value ? { selected: 'selected' } : {}) }, [o.label]),
-    ),
-  );
   return el('div', { class: 'field' }, [
     el('label', { class: 'field__label' }, [p.label]),
-    select,
+    dropdown(p.options ?? [], value, (v) => onChange(p.key, v)),
     p.help ? el('div', { class: 'field__help' }, [p.help]) : null,
   ]);
 }
