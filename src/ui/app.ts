@@ -268,6 +268,12 @@ export class App {
   }
 
   private renderSource(): void {
+    this.updateSourcePreview();
+    this.renderPreprocess();
+  }
+
+  /** Update only the source preview image, leaving the preprocess controls intact. */
+  private updateSourcePreview(): void {
     if (this.state.processedURL) {
       mount(this.sourceHost, el('div', { class: 'preview' }, [el('img', { src: this.state.processedURL, alt: 'Source image' })]));
     } else {
@@ -278,28 +284,46 @@ export class App {
         ]),
       );
     }
-    this.renderPreprocess();
   }
 
   private renderPreprocess(): void {
     const pp = this.state.preprocess;
-    const checkbox = (label: string, checked: boolean, on: (v: boolean) => void) =>
+
+    // Reprocess + refresh the preview image only (never rebuild the controls,
+    // so a slider drag is not interrupted by DOM replacement).
+    const apply = (): void => {
+      this.reprocess();
+      this.updateSourcePreview();
+      this.scheduleRun();
+    };
+
+    const checkbox = (label: string, checked: boolean, on: (v: boolean) => void): HTMLElement =>
       el('label', { class: 'checkbox' }, [
         el('input', {
           type: 'checkbox',
           ...(checked ? { checked: 'checked' } : {}),
           onChange: (e: Event) => {
             on((e.target as HTMLInputElement).checked);
-            this.reprocess();
-            this.renderSource();
-            this.scheduleRun();
+            apply();
           },
         }),
         label,
       ]);
 
+    // Keep a ref to the binarize checkbox so the threshold slider can auto-enable it.
+    const binarizeInput = el('input', {
+      type: 'checkbox',
+      ...(pp.thresholdEnabled ? { checked: 'checked' } : {}),
+      onChange: (e: Event) => {
+        pp.thresholdEnabled = (e.target as HTMLInputElement).checked;
+        apply();
+      },
+    }) as HTMLInputElement;
+    const binarizeRow = el('label', { class: 'checkbox' }, [binarizeInput, 'Binarize (threshold)']);
+
+    const valueEl = el('span', { class: 'field__value' }, [String(pp.threshold)]);
     const thresholdRow = el('div', { class: 'field' }, [
-      el('label', { class: 'field__label' }, ['Threshold', el('span', { class: 'field__value' }, [String(pp.threshold)])]),
+      el('label', { class: 'field__label' }, ['Threshold', valueEl]),
       el('input', {
         type: 'range',
         min: '0',
@@ -307,19 +331,23 @@ export class App {
         step: '1',
         value: String(pp.threshold),
         'aria-label': 'Threshold',
-        ...(pp.thresholdEnabled ? {} : { disabled: 'true' }),
         onInput: (e: Event) => {
           pp.threshold = Number((e.target as HTMLInputElement).value);
-          this.reprocess();
-          this.renderSource();
-          this.scheduleRun();
+          valueEl.textContent = String(pp.threshold);
+          // Adjusting the threshold implies you want to binarize — turn it on.
+          if (!pp.thresholdEnabled) {
+            pp.thresholdEnabled = true;
+            binarizeInput.checked = true;
+          }
+          apply();
         },
       }),
+      el('div', { class: 'field__help' }, ['Binarizes the image at this cutoff.']),
     ]);
 
     mount(this.sourcePreprocess, el('div', { class: 'field-group__title' }, ['Preprocess']), el('div', {}, [
       checkbox('Grayscale', pp.grayscale, (v) => (pp.grayscale = v)),
-      checkbox('Binarize (threshold)', pp.thresholdEnabled, (v) => (pp.thresholdEnabled = v)),
+      binarizeRow,
       thresholdRow,
       checkbox('Invert', pp.invert, (v) => (pp.invert = v)),
     ]));
