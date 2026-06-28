@@ -55,7 +55,7 @@ function gridOverlay(w: number, h: number): HTMLElement {
   }
   return fromHTML(
     `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
-       <g stroke="#e08a3c" stroke-width="${Math.max(0.5, w / 1600)}" opacity="0.45">${lines}</g>
+       <g style="stroke:var(--raster)" stroke-width="${Math.max(0.5, w / 1600)}" opacity="0.45">${lines}</g>
      </svg>`,
   );
 }
@@ -66,11 +66,11 @@ function nodesOverlay(svg: string, w: number, h: number): HTMLElement {
   const rects = pts
     .map(
       (p) =>
-        `<rect x="${p.x - size / 2}" y="${p.y - size / 2}" width="${size}" height="${size}" fill="#0e8f86"/>`,
+        `<rect x="${p.x - size / 2}" y="${p.y - size / 2}" width="${size}" height="${size}"/>`,
     )
     .join('');
   return fromHTML(
-    `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet"><g opacity="0.9">${rects}</g></svg>`,
+    `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet"><g style="fill:var(--vector)" opacity="0.9">${rects}</g></svg>`,
   );
 }
 

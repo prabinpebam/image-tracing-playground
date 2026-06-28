@@ -106,15 +106,15 @@ button {
   color: var(--paper);
 }
 .btn--vector:hover {
-  background: #0b7a72;
+  background: var(--vector-hover);
 }
 
 .btn--raster {
   background: var(--raster);
-  color: var(--graphite);
+  color: var(--ink-on-warm);
 }
 .btn--raster:hover {
-  background: #d07c2f;
+  background: var(--raster-hover);
 }
 
 .btn--ghost {
@@ -338,7 +338,7 @@ button {
 .field__value {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
-  color: var(--vector);
+  color: var(--vector-ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -455,7 +455,7 @@ select {
   grid-column: 2;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
-  color: var(--raster);
+  color: var(--raster-ink);
 }
 
 /* --------------------------------------------------------------- metrics */
@@ -595,7 +595,7 @@ select {
 }
 .toggle-btn[aria-pressed='true'] {
   border-color: var(--vector);
-  color: var(--vector);
+  color: var(--vector-ink);
 }
 
 .banner {
@@ -611,7 +611,7 @@ select {
 }
 .banner--info {
   background: var(--vector-soft);
-  color: var(--vector);
+  color: var(--graphite);
 }
 
 .spin {
@@ -670,7 +670,7 @@ select {
   border-color: var(--line);
 }
 .zone--source .icon-btn:hover {
-  color: var(--raster);
+  color: var(--raster-ink);
   border-color: var(--raster);
 }
 
@@ -743,7 +743,7 @@ select {
   background: var(--film);
 }
 .dropdown__opt[aria-selected='true'] {
-  color: var(--vector);
+  color: var(--vector-ink);
   font-weight: var(--weight-medium);
   background: color-mix(in srgb, var(--vector-soft) 45%, transparent);
 }
