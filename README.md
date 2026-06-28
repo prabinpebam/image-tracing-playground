@@ -1,5 +1,7 @@
 # Image Tracing Playground
 
+**Live demo: https://prabinpebam.github.io/image-tracing-playground/**
+
 A client-side playground for evaluating **deterministic raster-to-vector tracing algorithms** side by side. Load an image, route it through one or more tracing engines, tune each engine's parameters live, and compare the resulting SVGs both visually and by objective metrics (path count, node count, byte size, trace time, and reconstruction fidelity).
 
 It is an **evaluation harness**, not a production service — the goal is to pick the right algorithm and parameters for another project, with reproducible results and no backend.
